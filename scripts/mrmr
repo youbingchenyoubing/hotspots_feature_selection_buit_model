@@ -23,15 +23,19 @@
 #
 
 from __future__ import division, print_function
-
+import writeSelect
+import os
+import feature_score
+import configure
+from configure import *
 import logging, os, sys, time
-
+import pdb
 import multiprocessing as mp
 import numpy as np
-
 from mrmr import MRMR_LOGGER, DiscreteMrmr, FastCaim, UiThread, GaussianKde, MixedMrmr, PhyloMrmr
-
-
+#import ml
+#variables=[]
+#targets=[]
 THRESHOLD = 0.8
 
 
@@ -105,10 +109,20 @@ def main(argv, ui=None):
     if len(files) == 1:
         fh = open(files[0], 'r')
         lines = [l.strip() for l in fh]
+        length=len(lines)
         fh.close()
-
+        #pdb.set_trace()
+        arr=[]
         names = lines[0].split(',')[1:]
         arr = [[float(x) for x in l.split(',')] for l in lines[1:] if l != '']
+        '''for i in xrange(1,length):
+            l=lines[i]
+            line=[]
+            print("line=",i) 
+            for x in l.split(','):
+                print("x=",x)
+                line.append(float(x))
+            arr.append(line)'''
         m = np.array(arr, dtype=float)
 
         targets = m[:, 0].astype(int)
@@ -155,18 +169,40 @@ def main(argv, ui=None):
     maxrel, mrmr = selector._mrmr_selection(num_features, klass.MID, variables, targets, threshold=THRESHOLD, ui=ui)
 
     print('done feature selection across %i columns, took' % variables.shape[1], time.time() - b, 'seconds')
-
+    rowsmaxrel=[]
     print('I(X, Y) / H(X, Y)')
     for idx, value in maxrel:
+        rows=[]
         print('   %4d   % 5s   %6.4f' % (idx + 1, names[idx], value))
-
+        rows.append(idx+1)
+        rows.append(names[idx])
+        rowsmaxrel.append(rows)
+    rowsmrmr=[]
     print('\nI(X, Y) / H(X, Y) - I(X, X) / H(X, X) (related > %.3g)' % THRESHOLD)
     for idx, value, related in mrmr:
+        rows=[]
         print('   %4d   % 5s   %6.4f   (%s)' % (idx + 1, names[idx], value, '%d' % len(related))) #', '.join([names[i] + ': %6.4f' % v for i, v in related]))
+        rows.append(idx+1)
+        rows.append(names[idx])
+        rowsmrmr.append(rows)
 
-    # selector.select(variables, targets)
-    # print selector.subset(variables)
-
+    #selector.select(variables, targets)
+    #print ("the result is ",selector.subset(variables))
+    #writeSelect.writeResult(selector.subset(variables),num_features)
+    #writeSelect.writeResult(rowsmaxrel,num_features,'maxrel')    
+    #writeSelect.writeResult(rowsmrmr,num_features,'mrmr')  
+    writeSelect.selectFeatureVariable(rowsmaxrel,num_features,'maxrel')
+    writeSelect.selectFeatureVariable(rowsmaxrel,num_features,'mrmr')
+    #ml.randomForest(num_features,'maxrel')
+    #os.system('./os.sh'+' '+str(num_features)+' maxrel')
+    #os.system('./os.sh'+' '+str(num_features)+' mrmr')
+    #feature_score.get_X_Y(resultFile+'_maxrel'+'_'+str(num_features)+'_all.csv',type,num_features)
+    #feature_score.get_X_Y(resultFile+'_mrmr'+'_'+str(num_features)+'_all.csv',type,num_features)\
+    #filename=resultFile
+    os.system('./feature_select.sh '+resultFile+'_maxrel'+'_'+str(num_features)+'_all.csv'+' maxrel'+' '+str(num_features))
+    os.system('./feature_select.sh '+resultFile+'_mrmr'+'_'+str(num_features)+'_all.csv'+' mrmr'+' '+str(num_features))
+    #os.system('./feature_select.sh '+resultFile+'_mrmr'+'_'+str(num_features)+'_all.csv'+' mrmr'+' '+str(num_features))
+    #os.system('./feature_select.sh '+resultFile+'_mrmr'+'_'+str(num_features)+'_all.csv'+' mrmr'+' '+str(num_features))
     return 0
 
 
