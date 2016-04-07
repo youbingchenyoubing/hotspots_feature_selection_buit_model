@@ -81,7 +81,7 @@ def readFeature(num_features,type,select_feature,numtrees):
     print evaluator.toSummaryString()
     print evaluator.toClassDetailsString()
     print evaluator.toMatrixString()
-    return [evaluator.weightedPrecision(),evaluator.weightedRecall(),evaluator.weightedFMeasure(),evaluator.weightedMatthewsCorrelation(),evaluator.weightedFalseNegativeRate(),evaluator.weightedFalsePositiveRate(),evaluator.weightedTruePositiveRate(),evaluator.weightedTrueNegativeRate(),evaluator.weightedAreaUnderROC()]
+    return [evaluator.precision(1),evaluator.recall(1),evaluator.fMeasure(1),evaluator.matthewsCorrelationCoefficient(1),evaluator.numTruePositives(1),evaluator.numFalsePositives(1),evaluator.numTrueNegatives(1),evaluator.numFalseNegatives(1),evaluator.areaUnderROC(1)]
     
 def readCross(num,type,select_feature,numtrees):
 
@@ -111,7 +111,7 @@ def readCross(num,type,select_feature,numtrees):
     print evaluator.toSummaryString()
     print evaluator.toClassDetailsString()
     print evaluator.toMatrixString()
-    return [evaluator.weightedPrecision(),evaluator.weightedRecall(),evaluator.weightedFMeasure(),evaluator.weightedMatthewsCorrelation(),evaluator.weightedFalseNegativeRate(),evaluator.weightedFalsePositiveRate(),evaluator.weightedTruePositiveRate(),evaluator.weightedTrueNegativeRate(),evaluator.weightedAreaUnderROC()]
+    return [evaluator.precision(1),evaluator.recall(1),evaluator.fMeasure(1),evaluator.matthewsCorrelationCoefficient(1),evaluator.numTruePositives(1),evaluator.numFalsePositives(1),evaluator.numTrueNegatives(1),evaluator.numFalseNegatives(1),evaluator.areaUnderROC(1)]
 def writeResult(rows,filename):
 
 

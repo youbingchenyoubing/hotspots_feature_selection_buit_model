@@ -29,27 +29,34 @@ import java.util.Random as Random
 def readFeature(num_features,type,numtrees):
     #filename1=resultFileTest
     #filename2=resultFileTest2
-    filename1=resultFile+'_'+type+'_'+num_features+'_train.csv'
-    filename2=resultFile+'_'+type+'_'+num_features+'_test.csv'
+    filename1=resultFile+'_'+type+'_'+num_features+'_train.arff'
+    filename2=resultFile+'_'+type+'_'+num_features+'_test.arff'
     #print filename1
-    loader=CSVLoader()
-    loader.setSource(File(filename1))
-    data=loader.getDataSet()
+    #loader=CSVLoader()
+    #loader.setSource(File(filename1))
+    #data=loader.getDataSet()
     #print data.numAttributes()    
+    print "Loading data......"
+    train_file=FileReader(filename1)
+    train_data=Instances(train_file)
+    train_data.setClassIndex(train_data.numAttributes()-1)
+
     
-    data.setClassIndex(data.numAttributes()-1)
 
     rf=RF()
     rf.setNumTrees(numtrees)
     
-    rf.buildClassifier(data)
+    rf.buildClassifier(train_data)
    
     #print rf
-    loader.setSource(File(filename2))
+    #loader.setSource(File(filename2))
     
 
-    test_data=Instances(loader.getDataSet())
+    #test_data=Instances(loader.getDataSet())
     
+    # test_data.setClassIndex(test_data.numAttributes()-1)
+    test_file=FileReader(filename2)
+    test_data=Instances(test_file)
     test_data.setClassIndex(test_data.numAttributes()-1)
 
     
@@ -74,14 +81,14 @@ def readFeature(num_features,type,numtrees):
     
     attRange = Range()  # attributes to output
     outputDistribution = Boolean(True)
-    evaluator=Evaluation(data)
+    evaluator=Evaluation(train_data)
     evaluator.evaluateModel(rf,test_data,[output,attRange,outputDistribution])
     #print evaluator.evaluateModel(RF(),['-t',filename1,'-T',filename2,'-I',str(numtrees)])
     #evaluator1=Evaluation(test_data)
     print evaluator.toSummaryString()
     print evaluator.toClassDetailsString()
     print evaluator.toMatrixString()
-    return [evaluator.precision(1),evaluator.recall(1),evaluator.fMeasure(1),evaluator.matthewsCorrelationCoefficient(1),evaluator.numTruePositives(1),evaluator.numFalsePositives(1),evaluator.numTrueNegatives(1),evaluator.numFalseNegatives(1),evaluator.areaUnderROC(1)]
+    return [evaluator.precision(0),evaluator.recall(0),evaluator.fMeasure(0),evaluator.matthewsCorrelationCoefficient(0),evaluator.numTruePositives(0),evaluator.numFalsePositives(0),evaluator.numTrueNegatives(0),evaluator.numFalseNegatives(0),evaluator.areaUnderROC(0)]
     
 def readCross(num,type,numtrees):
 
@@ -111,7 +118,7 @@ def readCross(num,type,numtrees):
     print evaluator.toSummaryString()
     print evaluator.toClassDetailsString()
     print evaluator.toMatrixString()
-    return [evaluator.precision(1),evaluator.recall(1),evaluator.fMeasure(1),evaluator.matthewsCorrelationCoefficient(1),evaluator.numTruePositives(1),evaluator.numFalsePositives(1),evaluator.numTrueNegatives(1),evaluator.numFalseNegatives(1),evaluator.areaUnderROC(1)]
+    return [evaluator.weightedPrecision(),evaluator.weightedRecall(),evaluator.weightedFMeasure(),evaluator.weightedMatthewsCorrelation(),evaluator.weightedFalseNegativeRate(),evaluator.weightedFalsePositiveRate(),evaluator.weightedTruePositiveRate(),evaluator.weightedTrueNegativeRate(),evaluator.weightedAreaUnderROC()]
 def writeResult(rows,filename):
 
 
@@ -137,14 +144,14 @@ if __name__=="__main__":
 
     filename=result+'_'+type+'_'+num+'.txt'
     writeResult(rows,filename)
-    num=sys.argv[1]
+'''    num=sys.argv[1]
     type=sys.argv[2]
     rows=[]
-    rows.append(['precision','recall','f1','MCC','TP','FP','TN','FN','AUC'])
+    rows.append(['precision','recall','f1','MCC','TP','FP','FN','FP','AUC'])
     for i in xrange(10,120):
         newrow=readCross(num,type,i)
         rows.append(newrow)
 
     filename=result1+'_'+type+'_'+num+'.txt'
     writeResult(rows,filename)
-    #exit(0)
+    #exit(0)'''
