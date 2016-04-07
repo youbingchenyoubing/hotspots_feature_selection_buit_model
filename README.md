@@ -42,3 +42,8 @@ Usage
 
 + <p><code> python transferTXT2CSV2.py</code></p>
 
+ATTENTION
+============
+>Build model with final features you can find in following directory
+
++<p><code>cd ./scripts/check/feature_select</code> </p>
